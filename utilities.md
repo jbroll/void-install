@@ -24,6 +24,7 @@ xprop-1.2.8_1        # X11 property displayer (for wider)
 wmctrl-1.07_6        # X11 window manager control (for wider)
 xwininfo-1.1.6_1     # X11 window info (for wider)
 portaudio-devel-190600.20161030_6  # Audio I/O library (for talkie)
+peek-1.5.1_3         # Simple animated GIF/WebM/MP4 screen recorder
 ```
 
 ## Pre-installed
@@ -67,4 +68,24 @@ jq '.key' file.json   # Parse JSON
 tree -L 2             # Show directory tree
 xclip -sel clip       # Copy stdin to clipboard
 xclip -sel clip -o    # Paste from clipboard
+peek                  # Screen recorder for GIFs/WebM/MP4 (Super+Shift+R)
+```
+
+## Swap Configuration
+
+16GB swap file configured at `/swapfile`.
+
+### Setup Commands
+```bash
+sudo dd if=/dev/zero of=/swapfile bs=1M count=16384 status=progress
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+```
+
+### Verify
+```bash
+swapon --show        # Show active swap
+free -h              # Show memory/swap usage
 ```
