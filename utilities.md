@@ -26,7 +26,7 @@ xwininfo-1.1.6_1     # X11 window info (for wider)
 portaudio-devel-190600.20161030_6  # Audio I/O library (for talkie)
 peek-1.5.1_3         # Simple animated GIF/WebM/MP4 screen recorder
 librsvg-utils-2.59.2_2  # SVG to PNG/PDF converter (rsvg-convert)
-flowblade-2.16.3_1    # Non-linear video editor (GTK, MLT framework)
+shotcut-25.03.29_1    # Video editor (Qt6, MLT framework)
 ```
 
 ## Pre-installed
@@ -72,7 +72,7 @@ xclip -sel clip       # Copy stdin to clipboard
 xclip -sel clip -o    # Paste from clipboard
 peek                  # Screen recorder for GIFs/WebM/MP4 (Super+Shift+R)
 rsvg-convert -w 256 in.svg -o out.png  # Convert SVG to PNG
-flowblade             # Video editor for YouTube demos
+shotcut               # Video editor for YouTube demos
 ```
 
 ## Swap Configuration
