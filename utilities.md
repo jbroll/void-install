@@ -27,6 +27,8 @@ portaudio-devel-190600.20161030_6  # Audio I/O library (for talkie)
 peek-1.5.1_3         # Simple animated GIF/WebM/MP4 screen recorder
 librsvg-utils-2.59.2_2  # SVG to PNG/PDF converter (rsvg-convert)
 shotcut-25.03.29_1    # Video editor (Qt6, MLT framework)
+noto-fonts-ttf-2025.12.01_1  # Unicode fonts with symbol coverage
+noto-fonts-emoji-2.051_1  # Color emoji font
 ```
 
 ## Pre-installed
