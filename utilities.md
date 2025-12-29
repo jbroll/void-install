@@ -29,6 +29,12 @@ librsvg-utils-2.59.2_2  # SVG to PNG/PDF converter (rsvg-convert)
 shotcut-25.03.29_1    # Video editor (Qt6, MLT framework)
 noto-fonts-ttf-2025.12.01_1  # Unicode fonts with symbol coverage
 noto-fonts-emoji-2.051_1  # Color emoji font
+flatpak-1.16.1_1          # App sandboxing and distribution
+```
+
+## Flatpak Apps
+```
+com.discordapp.Discord    # Voice/text chat (Flathub)
 ```
 
 ## Pre-installed
@@ -75,6 +81,8 @@ xclip -sel clip -o    # Paste from clipboard
 peek                  # Screen recorder for GIFs/WebM/MP4 (Super+Shift+R)
 rsvg-convert -w 256 in.svg -o out.png  # Convert SVG to PNG
 shotcut               # Video editor for YouTube demos
+flatpak run com.discordapp.Discord  # Launch Discord
+flatpak update        # Update all flatpak apps
 ```
 
 ## Swap Configuration
