@@ -37,6 +37,31 @@ flatpak-1.16.1_1          # App sandboxing and distribution
 com.discordapp.Discord    # Voice/text chat (Flathub)
 ```
 
+### Flatpak Setup
+```bash
+sudo xbps-install -S flatpak
+flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+```
+
+### Install Discord
+```bash
+flatpak install flathub com.discordapp.Discord
+```
+
+### Autostart Discord
+Create `~/.config/autostart/discord.desktop`:
+```ini
+[Desktop Entry]
+Type=Application
+Name=Discord
+Exec=flatpak run com.discordapp.Discord
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+```
+
+**Note:** Log out and back in after installing Flatpak for Discord to appear in the application menu.
+
 ## Pre-installed
 ```
 rsync
