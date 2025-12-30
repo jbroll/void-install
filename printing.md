@@ -8,6 +8,9 @@ cups-filters-2.0.1_1
 system-config-printer-1.5.18_5
 ghostscript-10.06.0_1
 gutenprint-5.3.4_1
+sane-1.3.1_2
+sane-airscan-0.99.36_1
+simple-scan-46.0_1
 ```
 
 ## Service
@@ -74,3 +77,32 @@ This bypasses the Ghostscript CUPS raster pipeline that fails with "Page drawing
 lpstat -p -d                    # Check printer status
 echo "Test" | lp -d Canon-MX450 # Test print
 ```
+
+## Canon MX450 Network Scanning
+
+The MX450 scanner is automatically detected by SANE via both the pixma backend and sane-airscan (WSD).
+
+### Install SANE
+```bash
+sudo xbps-install -S sane sane-airscan simple-scan
+```
+
+### Verify Scanner Detection
+```bash
+scanimage -L
+# Shows:
+# device `pixma:MX450_192.168.1.238' is a CANON Canon PIXMA MX450 Series
+# device `airscan:w1:Canon MX450 series' is a WSD Canon MX450 series
+```
+
+### Command Line Scanning
+```bash
+# Scan to JPEG at 150dpi
+scanimage -d 'pixma:MX450_192.168.1.238' --resolution 150 --format=jpeg -o scan.jpg
+
+# Scan to PDF at 300dpi
+scanimage -d 'pixma:MX450_192.168.1.238' --resolution 300 --format=pdf -o scan.pdf
+```
+
+### GUI Scanning
+Run `simple-scan` for a graphical interface. The Canon MX450 appears automatically in the device list.
