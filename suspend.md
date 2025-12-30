@@ -66,11 +66,17 @@ button/lid)
     ;;
 ```
 
-### 6. Resume hook
+### 6. Sleep hook
 `/usr/lib/elogind/system-sleep/lid-resume.sh`:
 ```bash
 #!/bin/sh
 case $1 in
+    pre)
+        # Restore power management before suspend
+        for card in /sys/class/drm/card*/; do
+            echo "auto" > "${card}device/power/control" 2>/dev/null
+        done
+        ;;
     post)
         sleep 1
 
@@ -87,9 +93,9 @@ case $1 in
 esac
 ```
 
-This hook fixes two issues:
-- Intel graphics power state on resume
-- DisplayPort monitors not being recognized after suspend (requires unplug/replug without this fix)
+This hook fixes:
+- DisplayPort monitors not powering off during suspend (pre: restore auto power management)
+- DisplayPort monitors not being recognized after suspend (post: force re-detection)
 
 ## Event Chain
 1. Lid closes -> ACPI event generated
