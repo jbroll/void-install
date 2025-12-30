@@ -23,5 +23,11 @@ sudo sv status cupsd
 - GUI: `system-config-printer`
 - Add printer via Settings or web interface
 
-## Notes
-- cups-browsed (network printer discovery) is separate package if needed
+## Network Printer Discovery
+Avahi provides mDNS/DNS-SD for automatic network printer discovery:
+```bash
+sudo xbps-install -S avahi
+sudo ln -s /etc/sv/avahi-daemon /var/service/
+```
+
+Restart Firefox after enabling avahi for printers to appear in print dialog.
