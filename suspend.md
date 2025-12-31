@@ -97,6 +97,30 @@ This hook fixes:
 - DisplayPort monitors not powering off during suspend (pre: restore auto power management)
 - DisplayPort monitors not being recognized after suspend (post: force re-detection)
 
+### 7. Disable DPMS for DisplayPort monitors
+
+DPMS (Display Power Management Signaling) has a long-standing bug with Intel + DisplayPort where the monitor fails to wake after entering power-save mode. The DisplayPort link training fails to re-establish. See [freedesktop bug #23500](https://bugs.freedesktop.org/show_bug.cgi?id=23500) (open since 2010).
+
+Symptoms: Monitor appears connected (mouse moves off laptop screen) but backlight stays off after idle timeout.
+
+Disable DPMS:
+```bash
+xset -dpms
+```
+
+Add to session autostart (`~/.config/autostart/disable-dpms.desktop`):
+```ini
+[Desktop Entry]
+Type=Application
+Name=Disable DPMS
+Exec=xset -dpms
+Hidden=false
+NoDisplay=true
+X-GNOME-Autostart-enabled=true
+```
+
+Light-locker still blanks and locks the screen - it just won't send the DPMS signal that breaks DisplayPort wake.
+
 ## Event Chain
 1. Lid closes -> ACPI event generated
 2. xfce4-power-manager: defers to elogind (no inhibitor blocking)
