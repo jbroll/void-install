@@ -121,6 +121,30 @@ xinput list-props "ASUE120C:00 04F3:32D8 Touchpad" | grep "Tapping Enabled"
 # Note: libinput list-devices shows the default state, not X11 overrides
 ```
 
+## Caps Lock Remapped to Escape
+
+Caps Lock is remapped to Escape (useful for vim):
+
+```bash
+setxkbmap -option caps:escape
+```
+
+### Autostart
+File: `~/.config/autostart/caps-to-escape.desktop`
+```
+[Desktop Entry]
+Type=Application
+Name=Caps Lock to Escape
+Exec=setxkbmap -option caps:escape
+```
+
+### Alternative mappings
+```bash
+setxkbmap -option caps:none           # Disable completely
+setxkbmap -option caps:ctrl_modifier  # Make it Ctrl
+setxkbmap -option caps:backspace      # Make it Backspace
+```
+
 ## Notes
 - PipeWire handles audio via pipewire-pulse compatibility layer
 - xfce4-pulseaudio-plugin works with PipeWire (uses pactl)
