@@ -103,23 +103,26 @@ DPMS (Display Power Management Signaling) has a long-standing bug with Intel + D
 
 Symptoms: Monitor appears connected (mouse moves off laptop screen) but backlight stays off after idle timeout.
 
-Disable DPMS:
+**Important**: Using `xset -dpms` in autostart does NOT work because xfce4-power-manager re-enables DPMS on startup. You must disable it via xfconf:
+
+```bash
+xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/dpms-enabled -s false -t bool -n
+xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/blank-on-ac -s 0 -t int -n
+xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/blank-on-battery -s 0 -t int -n
+```
+
+To apply immediately:
 ```bash
 xset -dpms
 ```
 
-Add to session autostart (`~/.config/autostart/disable-dpms.desktop`):
-```ini
-[Desktop Entry]
-Type=Application
-Name=Disable DPMS
-Exec=xset -dpms
-Hidden=false
-NoDisplay=true
-X-GNOME-Autostart-enabled=true
+Verify DPMS is disabled:
+```bash
+xset q | grep "DPMS is"
+# Should show: DPMS is Disabled
 ```
 
-Light-locker still blanks and locks the screen - it just won't send the DPMS signal that breaks DisplayPort wake.
+Note: With DPMS disabled, the monitor never enters power-save mode. Light-locker can still lock the screen (shows login prompt), but the monitor backlight stays on.
 
 ## Event Chain
 1. Lid closes -> ACPI event generated
