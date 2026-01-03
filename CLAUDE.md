@@ -30,6 +30,7 @@ This is a documentation repository for a Void Linux installation on an ASUS Zenb
 | `printing.md` | CUPS setup |
 | `dev-tools.md` | Development environment |
 | `kicad.md` | KiCad EDA suite installation |
+| `onedrive.md` | OneDrive client (built from source for working auth) |
 | `xfce4-panel.xml` | Panel configuration backup |
 
 ## Void Linux Specifics
