@@ -97,32 +97,30 @@ This hook fixes:
 - DisplayPort monitors not powering off during suspend (pre: restore auto power management)
 - DisplayPort monitors not being recognized after suspend (post: force re-detection)
 
-### 7. Disable DPMS for DisplayPort monitors
+### 7. Disable DP MST for DPMS wake fix
 
-DPMS (Display Power Management Signaling) has a long-standing bug with Intel + DisplayPort where the monitor fails to wake after entering power-save mode. The DisplayPort link training fails to re-establish. See [freedesktop bug #23500](https://bugs.freedesktop.org/show_bug.cgi?id=23500) (open since 2010).
+DisplayPort monitors fail to wake after DPMS power-save mode on Intel graphics. The DP link training fails to re-establish. See [freedesktop bug #23500](https://bugs.freedesktop.org/show_bug.cgi?id=23500) (open since 2010).
 
 Symptoms: Monitor appears connected (mouse moves off laptop screen) but backlight stays off after idle timeout.
 
-**Important**: Using `xset -dpms` in autostart does NOT work because xfce4-power-manager re-enables DPMS on startup. You must disable it via xfconf:
-
-```bash
-xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/dpms-enabled -s false -t bool -n
-xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/blank-on-ac -s 0 -t int -n
-xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/blank-on-battery -s 0 -t int -n
+**Fix**: Disable Multi-Stream Transport (MST) via kernel parameter. Edit `/etc/default/grub`:
+```
+GRUB_CMDLINE_LINUX_DEFAULT="... i915.enable_dp_mst=0"
 ```
 
-To apply immediately:
+Then regenerate GRUB config and reboot:
 ```bash
-xset -dpms
+sudo grub-mkconfig -o /boot/grub/grub.cfg
+sudo reboot
 ```
 
-Verify DPMS is disabled:
-```bash
-xset q | grep "DPMS is"
-# Should show: DPMS is Disabled
-```
+With MST disabled, DPMS works correctly and the DP monitor wakes from power-save mode. MST is only needed for daisy-chaining multiple monitors over a single DP connection.
 
-Note: With DPMS disabled, the monitor never enters power-save mode. Light-locker can still lock the screen (shows login prompt), but the monitor backlight stays on.
+Verify the parameter is active after reboot:
+```bash
+cat /proc/cmdline | grep -o 'i915.enable_dp_mst=[0-9]'
+# Should show: i915.enable_dp_mst=0
+```
 
 ## Event Chain
 1. Lid closes -> ACPI event generated
