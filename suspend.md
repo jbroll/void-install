@@ -122,6 +122,35 @@ cat /proc/cmdline | grep -o 'i915.enable_dp_mst=[0-9]'
 # Should show: i915.enable_dp_mst=0
 ```
 
+### 8. Prevent GPU runtime suspend for DP monitor wake
+
+Even with MST disabled, extended idle (~1 hour) can cause the GPU to enter runtime suspend, breaking the DP link. The DP monitor stays on but shows a black screen because the GPU stops sending signal.
+
+**Fix**: Keep GPU power "on" during normal operation via udev rule.
+
+`/etc/udev/rules.d/99-gpu-power.rules`:
+```
+ACTION=="add", SUBSYSTEM=="drm", KERNEL=="card0", ATTR{device/power/control}="on"
+```
+
+Create the rule:
+```bash
+sudo mkdir -p /etc/udev/rules.d
+echo 'ACTION=="add", SUBSYSTEM=="drm", KERNEL=="card0", ATTR{device/power/control}="on"' | sudo tee /etc/udev/rules.d/99-gpu-power.rules
+```
+
+This works with the sleep hook (section 6):
+- **Boot**: udev sets GPU power → "on"
+- **Normal idle**: GPU stays "on", DP link maintained, DPMS works
+- **Suspend**: sleep hook sets GPU → "auto" (allows power saving)
+- **Resume**: sleep hook sets GPU → "on"
+
+Verify current setting:
+```bash
+cat /sys/class/drm/card0/device/power/control
+# Should show: on
+```
+
 ## Event Chain
 1. Lid closes -> ACPI event generated
 2. xfce4-power-manager: defers to elogind (no inhibitor blocking)
