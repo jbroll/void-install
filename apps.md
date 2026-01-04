@@ -60,6 +60,21 @@ StartupWMClass=Talkie
 
 ---
 
+## Pinta (Flatpak)
+Simple image editor similar to Paint.NET.
+
+**Install:**
+```bash
+flatpak install -y flathub com.github.PintaProject.Pinta
+```
+
+**Run:**
+```bash
+flatpak run com.github.PintaProject.Pinta
+```
+
+---
+
 ## Adding to Panel
 
 Desktop files copied to `~/.local/share/applications/` and launchers added to panel-2:
