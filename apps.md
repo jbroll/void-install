@@ -60,17 +60,12 @@ StartupWMClass=Talkie
 
 ---
 
-## Pinta (Flatpak)
-Simple image editor similar to Paint.NET.
+## azpainter
+Lightweight image editor for illustration (crop, rotate, annotate).
 
 **Install:**
 ```bash
-flatpak install -y flathub com.github.PintaProject.Pinta
-```
-
-**Run:**
-```bash
-flatpak run com.github.PintaProject.Pinta
+sudo xbps-install -y azpainter
 ```
 
 ---
