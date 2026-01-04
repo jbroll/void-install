@@ -114,7 +114,9 @@ sudo grub-mkconfig -o /boot/grub/grub.cfg
 sudo reboot
 ```
 
-With MST disabled, DPMS works correctly and the DP monitor wakes from power-save mode. MST is only needed for daisy-chaining multiple monitors over a single DP connection.
+With MST disabled, DPMS should work correctly. MST is only needed for daisy-chaining multiple monitors over a single DP connection.
+
+**Note**: This fix reduces but doesn't fully eliminate the problem on all systems. See section 9 for auto-recovery if DP wake still fails.
 
 Verify the parameter is active after reboot:
 ```bash
@@ -174,3 +176,62 @@ pgrep light-locker
 cat /sys/power/mem_sleep
 # Should show [s2idle]
 ```
+
+### 9. DP monitor auto-recovery daemon
+
+If DP wake still fails after DPMS idle, use this daemon to automatically recover.
+
+**Manual recovery** (run if external display goes black):
+```bash
+xrandr --output DP-1 --auto --right-of eDP-1
+```
+
+**Auto-recovery script** (`~/.local/bin/dp-wake-monitor.sh`):
+```bash
+#!/bin/sh
+# Monitors for failed DP wake after DPMS and auto-recovers
+# Only acts when: DPMS is On (user active) but DP has no active mode
+
+while true; do
+    sleep 5
+
+    # Check if DPMS is in "On" state (user is active, not idle)
+    dpms_on=$(xset q 2>/dev/null | grep -c "Monitor is On")
+    [ "$dpms_on" -eq 0 ] && continue
+
+    # Check if DP-1 is connected but has no active resolution
+    dp_status=$(xrandr --query 2>/dev/null | grep "^DP-1 connected")
+    [ -z "$dp_status" ] && continue
+
+    # If connected but no resolution shown (no * in the mode list)
+    has_active=$(xrandr --query 2>/dev/null | sed -n '/^DP-1 connected/,/^[A-Z]/p' | grep -c '\*')
+    if [ "$has_active" -eq 0 ]; then
+        logger "dp-wake-monitor: DP-1 connected but inactive, recovering..."
+        xrandr --output DP-1 --auto --right-of eDP-1
+    fi
+done
+```
+
+**Install and enable**:
+```bash
+mkdir -p ~/.local/bin
+# Create script (content above)
+chmod +x ~/.local/bin/dp-wake-monitor.sh
+```
+
+**Autostart** (`~/.config/autostart/dp-wake-monitor.desktop`):
+```ini
+[Desktop Entry]
+Type=Application
+Name=DP Wake Monitor
+Exec=/home/john/.local/bin/dp-wake-monitor.sh
+Hidden=false
+NoDisplay=true
+X-GNOME-Autostart-enabled=true
+```
+
+The daemon checks every 5 seconds. It only runs xrandr when:
+1. DPMS state is "On" (user has moved mouse/pressed key)
+2. DP-1 is connected but has no active mode
+
+This respects intentional screen blanking during idle.
