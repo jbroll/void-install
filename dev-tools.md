@@ -44,10 +44,20 @@ arduino-cli-1.4.0_1
 sudo usermod -a -G dialout $USER
 # Log out and back in for group change to take effect
 
-# Update core index
+# Initialize config and update core index
+arduino-cli config init
 arduino-cli core update-index
+```
 
-# Install board cores as needed, e.g.:
+**Teensy boards (third-party):**
+```bash
+arduino-cli config add board_manager.additional_urls https://www.pjrc.com/teensy/package_teensy_index.json
+arduino-cli core update-index
+arduino-cli core install teensy:avr
+```
+
+**Other board cores:**
+```bash
 arduino-cli core install arduino:avr      # Uno, Mega, etc.
 arduino-cli core install arduino:samd     # Zero, MKR boards
 arduino-cli core install esp32:esp32      # ESP32 boards
