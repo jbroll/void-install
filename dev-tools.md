@@ -33,9 +33,28 @@ gdb --version
 python3 --version
 ```
 
+### Arduino CLI
+```
+arduino-cli-1.4.0_1
+```
+
+**Setup:**
+```bash
+# Add user to dialout group for serial port access
+sudo usermod -a -G dialout $USER
+# Log out and back in for group change to take effect
+
+# Update core index
+arduino-cli core update-index
+
+# Install board cores as needed, e.g.:
+arduino-cli core install arduino:avr      # Uno, Mega, etc.
+arduino-cli core install arduino:samd     # Zero, MKR boards
+arduino-cli core install esp32:esp32      # ESP32 boards
+```
+
 ## Not Yet Installed
 - Node.js (install via nvm)
-- Embedded toolchain (cross-arm-none-eabi-gcc)
 - Rust/Cargo
 
 ## Notes
