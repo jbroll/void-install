@@ -66,6 +66,13 @@ arduino-cli core install esp32:esp32      # ESP32 boards
 ### PlatformIO
 ```
 platformio-6.1.18_2
+python3.13-3.13.5_3       # Required by PlatformIO (not compatible with 3.14)
+uv-1.2.2_1                # Fast Python package manager
+```
+
+**Install:**
+```bash
+sudo xbps-install -y platformio python3.13 uv
 ```
 
 **Usage:**
