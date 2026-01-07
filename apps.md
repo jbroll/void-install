@@ -70,6 +70,16 @@ sudo xbps-install -y azpainter
 
 ---
 
+## Chromium
+Web browser.
+
+**Install:**
+```bash
+sudo xbps-install -y chromium
+```
+
+---
+
 ## Adding to Panel
 
 Desktop files copied to `~/.local/share/applications/` and launchers added to panel-2:

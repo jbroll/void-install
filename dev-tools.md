@@ -63,6 +63,20 @@ arduino-cli core install arduino:samd     # Zero, MKR boards
 arduino-cli core install esp32:esp32      # ESP32 boards
 ```
 
+### PlatformIO
+```
+platformio-6.1.18_2
+```
+
+**Usage:**
+```bash
+pio init                  # Initialize project
+pio run                   # Build project
+pio run -t upload         # Upload to board
+pio device list           # List connected devices
+pio device monitor        # Serial monitor
+```
+
 ## Not Yet Installed
 - Node.js (install via nvm)
 - Rust/Cargo
