@@ -31,6 +31,8 @@ noto-fonts-ttf-2025.12.01_1  # Unicode fonts with symbol coverage
 noto-fonts-emoji-2.051_1  # Color emoji font
 flatpak-1.16.1_1          # App sandboxing and distribution
 netscanner-0.6.3_1        # Network scanner with TUI
+vlc-3.0.23_1              # Media player
+ffmpeg-4.4.6_3            # Audio/video encoding/decoding
 ```
 
 ## Flatpak Apps
@@ -111,6 +113,9 @@ shotcut               # Video editor for YouTube demos
 flatpak run com.discordapp.Discord  # Launch Discord
 flatpak update        # Update all flatpak apps
 netscanner            # TUI network scanner (run as root for full features)
+vlc video.mp4         # Play media file
+ffmpeg -i in.mp4 out.mkv  # Convert video format
+ffprobe video.mp4     # Show media file info
 ```
 
 ## Swap Configuration
