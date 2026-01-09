@@ -84,9 +84,71 @@ pio device list           # List connected devices
 pio device monitor        # Serial monitor
 ```
 
-## Not Yet Installed
-- Node.js (install via nvm)
-- Rust/Cargo
+### Rust (via rustup)
+```
+rustup (toolchain manager)
+rustc (compiler)
+cargo (package manager)
+```
+
+**Install:**
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source ~/.cargo/env
+```
+
+**Usage:**
+```bash
+rustup update                         # Update toolchain
+rustup default stable                 # Use stable (default)
+rustup default nightly                # Use nightly
+rustup component add clippy rustfmt   # Add linter and formatter
+```
+
+### Node.js (via nvm)
+```
+nvm (Node Version Manager)
+node v22.21.1
+npm
+```
+
+**Install:**
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+source ~/.bashrc
+nvm install --lts
+```
+
+**Usage:**
+```bash
+nvm ls                    # List installed versions
+nvm install <version>     # Install specific version
+nvm use <version>         # Switch version
+```
+
+### LSP Servers (for Claude Code)
+```
+typescript-language-server (TypeScript/JavaScript)
+pyright (Python)
+rust-analyzer (Rust, installed via rustup)
+```
+
+**Install:**
+```bash
+# TypeScript LSP
+npm install -g typescript-language-server typescript
+
+# Python LSP (via npm since Void uses externally-managed Python)
+npm install -g pyright
+
+# Rust LSP
+rustup component add rust-analyzer
+```
+
+**Verify:**
+```bash
+which typescript-language-server pyright rust-analyzer
+```
 
 ## Notes
 - LLVM 21 is bleeding edge (alternatives system manages versions)
