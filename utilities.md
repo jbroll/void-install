@@ -32,7 +32,11 @@ noto-fonts-emoji-2.051_1  # Color emoji font
 flatpak-1.16.1_1          # App sandboxing and distribution
 netscanner-0.6.3_1        # Network scanner with TUI
 vlc-3.0.23_1              # Media player
-ffmpeg-4.4.6_3            # Audio/video encoding/decoding
+screen-5.0.1_1            # Terminal multiplexer (sessions)
+tmux-3.6a_1               # Terminal multiplexer (modern)
+scrot-1.12.1_1            # CLI screenshot utility
+espeak-ng-1.52.0_1        # Text-to-speech engine
+dialog-1.3.20251001_1     # CLI dialog boxes (menus, forms)
 ```
 
 ## Flatpak Apps
@@ -114,8 +118,11 @@ flatpak run com.discordapp.Discord  # Launch Discord
 flatpak update        # Update all flatpak apps
 netscanner            # TUI network scanner (run as root for full features)
 vlc video.mp4         # Play media file
-ffmpeg -i in.mp4 out.mkv  # Convert video format
-ffprobe video.mp4     # Show media file info
+screen -S name        # Start named session
+tmux new -s name      # Start tmux session
+scrot -s screenshot.png   # Screenshot selection
+espeak-ng "Hello"     # Text-to-speech
+dialog --msgbox "Hi" 10 30  # Display dialog box
 ```
 
 ## Swap Configuration

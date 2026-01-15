@@ -5,23 +5,48 @@ Date: 2024-12-24
 
 ### Core Tools
 ```
-git (pre-installed)
-cmake-4.1.2_1
-gdb-16.3_2
+base-devel-20181003_2     # Build essentials meta-package
+git-2.51.2_1              # Version control
+git-filter-repo-2.34.0_5  # Git history rewriting
+git-lfs-3.6.1_1           # Git Large File Storage
+github-cli-2.83.2_1       # GitHub CLI (gh command)
+cmake-4.1.2_1             # Build system generator
+gdb-16.3_2                # Debugger
+shellcheck-0.11.0_1       # Shell script linter
 ```
 
 ### LLVM/Clang Toolchain
 ```
-clang-21 (via clang21-21.1.7_1)
-llvm-21 (via llvm21-21.1.7_1)
-compiler-rt21-21.1.7_1
+clang-21_3                # C/C++/ObjC compiler
+llvm-21_3                 # LLVM toolchain
+```
+
+### GCC Toolchain
+```
+gcc-14.2.1+20250405_4         # GNU C/C++ compiler
+gcc-fortran-14.2.1+20250405_4 # GNU Fortran compiler
+```
+
+### Other Compilers
+```
+ldc-1.39.0_1              # D language compiler (LLVM-based)
 ```
 
 ### Python
 ```
-python3 (pre-installed, 3.14)
-python3-pip
-python3-devel
+python3-3.14.2_2          # Python interpreter
+python3-pip-25.3_2        # Package installer
+python3-devel-3.14.2_2    # Development headers
+python3-setuptools-80.9.0_2  # Build tools
+```
+
+### Development Libraries
+```
+openblas-devel-0.3.30_1   # Optimized BLAS/LAPACK
+sqlite-devel-3.50.4_1     # SQLite development files
+cairo-devel-1.18.4_2      # 2D graphics library
+libcurl-devel-8.17.0_1    # HTTP client library
+gobject-introspection-1.86.0_2  # GObject introspection
 ```
 
 ## Verify Installation
@@ -29,8 +54,12 @@ python3-devel
 git --version
 cmake --version
 clang --version
+gcc --version
 gdb --version
 python3 --version
+ldc2 --version
+gh --version
+shellcheck --version
 ```
 
 ### Arduino CLI
@@ -126,30 +155,30 @@ nvm install <version>     # Install specific version
 nvm use <version>         # Switch version
 ```
 
-### LSP Servers (for Claude Code)
+### LSP Servers
+
+See [claude-code.md](claude-code.md) for Claude Code LSP configuration and installation.
+
+### Container Tools
 ```
-typescript-language-server (TypeScript/JavaScript)
-pyright (Python)
-rust-analyzer (Rust, installed via rustup)
+podman-5.6.1_1            # Docker-compatible container runtime
+skopeo-1.16.0_3           # Container image inspection
+crane-3.6.1_5             # Container registry tool
+umoci-0.4.7_4             # OCI image manipulation
+proot-5.2.0_1             # User-space chroot
 ```
 
-**Install:**
+**Usage:**
 ```bash
-# TypeScript LSP
-npm install -g typescript-language-server typescript
-
-# Python LSP (via npm since Void uses externally-managed Python)
-npm install -g pyright
-
-# Rust LSP
-rustup component add rust-analyzer
-```
-
-**Verify:**
-```bash
-which typescript-language-server pyright rust-analyzer
+podman run -it alpine sh        # Run container
+podman images                   # List images
+skopeo inspect docker://alpine  # Inspect remote image
+crane ls alpine                 # List tags
+umoci unpack --image oci:img bundle  # Unpack OCI image
+proot -r rootfs /bin/sh         # Chroot without root
 ```
 
 ## Notes
 - LLVM 21 is bleeding edge (alternatives system manages versions)
 - Python 3.14 is default in Void
+- Container tools are rootless-capable (podman)

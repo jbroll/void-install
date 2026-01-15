@@ -29,6 +29,7 @@ This is a documentation repository for a Void Linux installation on an ASUS Zenb
 | `firmware-graphics.md` | Intel graphics/firmware packages |
 | `printing.md` | CUPS setup |
 | `dev-tools.md` | Development environment (Node.js, Rust, LSP servers) |
+| `claude-code.md` | Claude Code CLI setup and LSP configuration |
 | `kicad.md` | KiCad EDA suite installation |
 | `onedrive.md` | OneDrive client (built from source for working auth) |
 | `xfce4-panel.xml` | Panel configuration backup |
@@ -61,27 +62,3 @@ xfconf-query -c <channel> -lv                        # List all properties
 2. **Suspend**: Uses light-locker + acpid instead of xfce4-screensaver (rendering issues with Intel graphics on resume)
 3. **Touchpad**: Must remove xf86-input-synaptics to use libinput tap-to-click
 
-## Claude Code LSP Configuration
-
-LSP servers provide real-time code intelligence (type errors, go-to-definition, completions).
-
-**Settings file:** `~/.claude/settings.json`
-
-```json
-{
-  "enabledPlugins": {
-    "typescript-lsp@claude-plugins-official": true,
-    "pyright-lsp@claude-plugins-official": true,
-    "rust-lsp@claude-plugins-official": true
-  }
-}
-```
-
-**Required LSP servers** (see `dev-tools.md` for installation):
-| Plugin | Server | Install |
-|--------|--------|---------|
-| typescript-lsp | typescript-language-server | `npm install -g typescript-language-server typescript` |
-| pyright-lsp | pyright | `npm install -g pyright` |
-| rust-lsp | rust-analyzer | `rustup component add rust-analyzer` |
-
-**Note:** On Void Linux, use npm to install pyright since the system Python is externally managed (PEP 668).
