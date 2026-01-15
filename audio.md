@@ -37,6 +37,42 @@ pactl info
 speaker-test -c 2
 ```
 
+## Fix: PipeWire Not Auto-Starting (XDG Autostart)
+
+**Problem**: After login, no PulseAudio server running (`pactl info` fails).
+
+**Cause**: Missing XDG autostart symlinks for wireplumber and pipewire-pulse.
+
+**Diagnosis**:
+```bash
+# Check if processes are running
+pgrep -a pipewire
+pgrep -a wireplumber
+
+# Check autostart entries
+ls /etc/xdg/autostart/*pipewire* /etc/xdg/autostart/*wireplumber*
+```
+
+**Fix**: Create missing symlinks:
+```bash
+sudo ln -s /usr/share/applications/wireplumber.desktop /etc/xdg/autostart/
+sudo ln -s /usr/share/applications/pipewire-pulse.desktop /etc/xdg/autostart/
+```
+
+**Required autostart entries** (all three needed):
+```
+/etc/xdg/autostart/pipewire.desktop        -> /usr/share/applications/pipewire.desktop
+/etc/xdg/autostart/pipewire-pulse.desktop  -> /usr/share/applications/pipewire-pulse.desktop
+/etc/xdg/autostart/wireplumber.desktop     -> /usr/share/applications/wireplumber.desktop
+```
+
+**Start manually** (without logout):
+```bash
+pipewire &
+pipewire-pulse &
+wireplumber &
+```
+
 ## CS35L41 Speaker Amp Fix (ASUS Zenbook 14 UX3405MA)
 
 **Problem**: After reboot, no audio output despite PipeWire running correctly.
