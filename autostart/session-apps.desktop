@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Session Apps
+Comment=Launch apps and restore window positions
+Exec=/home/john/bin/autostart-session.sh
+Terminal=false
+Hidden=true
+X-XFCE-Autostart-Override=true
+

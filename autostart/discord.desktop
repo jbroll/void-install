@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Discord
+Exec=flatpak run com.discordapp.Discord
+Hidden=true
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+

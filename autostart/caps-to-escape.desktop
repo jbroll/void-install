@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Caps Lock to Escape
+Exec=setxkbmap -option caps:escape
+Hidden=true
+

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=DP Wake Monitor
+Exec=/home/john/.local/bin/dp-wake-monitor.sh
+Hidden=true
+NoDisplay=true
+X-GNOME-Autostart-enabled=true
+
