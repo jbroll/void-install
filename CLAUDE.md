@@ -32,6 +32,7 @@ This is a documentation repository for a Void Linux installation on an ASUS Zenb
 | `claude-code.md` | Claude Code CLI setup and LSP configuration |
 | `kicad.md` | KiCad EDA suite installation |
 | `onedrive.md` | OneDrive client (built from source for working auth) |
+| `autostart/` | XDG autostart overrides backup (excludes wider-managed entries) |
 | `xfce4-panel.xml` | Panel configuration backup |
 
 ## Void Linux Specifics
