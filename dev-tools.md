@@ -19,6 +19,19 @@ shellcheck-0.11.0_1       # Shell script linter
 ```
 clang-21_3                # C/C++/ObjC compiler
 llvm-21_3                 # LLVM toolchain
+clang-tools-extra-21_3    # clangd, clang-tidy, clang-format
+```
+
+**clangd** is the C/C++ language server for IDE features (completions, diagnostics, go-to-definition).
+
+For clangd to understand your project, generate a `compile_commands.json`:
+```bash
+# CMake projects
+cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
+
+# Make projects (install Bear first)
+sudo xbps-install -y Bear
+bear -- make
 ```
 
 ### GCC Toolchain
@@ -111,6 +124,33 @@ pio run                   # Build project
 pio run -t upload         # Upload to board
 pio device list           # List connected devices
 pio device monitor        # Serial monitor
+```
+
+**Serial monitor reset fix:**
+
+Void Linux keeps stricter POSIX TTY defaults than Ubuntu. The `hupcl` (hang-up on close) setting causes DTR to be held low when opening serial ports, which holds MCU boards in reset state during `pio device monitor`.
+
+A udev rule fixes this automatically:
+
+```
+/etc/udev/rules.d/99-serial-noreset.rules
+```
+
+```bash
+# Disable HUPCL on CDC ACM devices to prevent DTR from holding MCUs in reset
+KERNEL=="ttyACM*", ACTION=="add", RUN+="/bin/stty -F /dev/%k -hupcl"
+```
+
+Apply without reboot:
+```bash
+sudo udevadm control --reload
+sudo udevadm trigger
+```
+
+Verify after plugging in a board:
+```bash
+stty -F /dev/ttyACM0 -a | grep hupcl
+# Should show: -hupcl (with minus prefix)
 ```
 
 ### Rust (via rustup)
