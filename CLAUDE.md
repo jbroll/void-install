@@ -33,6 +33,8 @@ This is a documentation repository for a Void Linux installation on an ASUS Zenb
 | `kicad.md` | KiCad EDA suite installation |
 | `onedrive.md` | OneDrive client (built from source for working auth) |
 | `autostart/` | XDG autostart overrides backup (excludes wider-managed entries) |
+| `scripts/` | Custom shell scripts (audio-monitor.sh, etc.) |
+| `wireplumber/` | WirePlumber config backups (no-suspend.conf) |
 | `xfce4-panel.xml` | Panel configuration backup |
 
 ## Void Linux Specifics

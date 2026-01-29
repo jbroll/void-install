@@ -1,5 +1,6 @@
 # Audio Setup
 Date: 2024-12-24
+Updated: 2026-01-27 (WirePlumber no-suspend config, PipeWire crash recovery monitor)
 
 ## Status
 Audio packages already installed with base system. Only sof-firmware was missing (installed with firmware step).
@@ -37,40 +38,24 @@ pactl info
 speaker-test -c 2
 ```
 
-## Fix: PipeWire Not Auto-Starting (XDG Autostart)
+## Auto-Start Configuration
 
-**Problem**: After login, no PulseAudio server running (`pactl info` fails).
+Void provides XDG autostart `.desktop` files that start PipeWire automatically on login:
+```
+/etc/xdg/autostart/pipewire.desktop
+/etc/xdg/autostart/pipewire-pulse.desktop
+/etc/xdg/autostart/wireplumber.desktop
+```
 
-**Cause**: Missing XDG autostart symlinks for wireplumber and pipewire-pulse.
+**Important**: Do NOT create `~/.config/autostart/` overrides with `Hidden=true` - this disables autostart.
 
-**Diagnosis**:
+**Verify**:
 ```bash
-# Check if processes are running
-pgrep -a pipewire
-pgrep -a wireplumber
+# Check PulseAudio emulation is working
+pactl info
 
-# Check autostart entries
-ls /etc/xdg/autostart/*pipewire* /etc/xdg/autostart/*wireplumber*
-```
-
-**Fix**: Create missing symlinks:
-```bash
-sudo ln -s /usr/share/applications/wireplumber.desktop /etc/xdg/autostart/
-sudo ln -s /usr/share/applications/pipewire-pulse.desktop /etc/xdg/autostart/
-```
-
-**Required autostart entries** (all three needed):
-```
-/etc/xdg/autostart/pipewire.desktop        -> /usr/share/applications/pipewire.desktop
-/etc/xdg/autostart/pipewire-pulse.desktop  -> /usr/share/applications/pipewire-pulse.desktop
-/etc/xdg/autostart/wireplumber.desktop     -> /usr/share/applications/wireplumber.desktop
-```
-
-**Start manually** (without logout):
-```bash
-pipewire &
-pipewire-pulse &
-wireplumber &
+# Check processes
+ps aux | grep -E "(pipewire|wireplumber)" | grep -v grep
 ```
 
 ## CS35L41 Speaker Amp Fix (ASUS Zenbook 14 UX3405MA)
@@ -96,8 +81,125 @@ sudo xbps-install -Sy linux6.16
 - Firmware: `/lib/firmware/cirrus/cs35l41-dsp1-spk-prot-10431a63*`
 - Both L/R speaker amps on SPI bus
 
+## Disable WirePlumber Node Suspend (CS35L41 Idle Fix)
+
+**Problem**: Audio stops working after the computer sits idle (even without suspend). Screen blanks via DPMS, and when you return, audio is locked up.
+
+**Cause**: WirePlumber suspends idle audio nodes after 5 seconds by default. The CS35L41 amp doesn't recover properly from this node suspend.
+
+**Symptoms**: No audio output, but PipeWire appears to be running. May see CS35L41 errors in `dmesg`.
+
+**Solution**: Disable audio node suspend timeout.
+
+`~/.config/wireplumber/wireplumber.conf.d/no-suspend.conf`:
+```
+monitor.alsa.rules = [
+  {
+    matches = [
+      { node.name = "~alsa_output.*" }
+    ]
+    actions = {
+      update-props = {
+        session.suspend-timeout-seconds = 0
+      }
+    }
+  }
+]
+```
+
+Create with:
+```bash
+mkdir -p ~/.config/wireplumber/wireplumber.conf.d
+cat > ~/.config/wireplumber/wireplumber.conf.d/no-suspend.conf << 'EOF'
+monitor.alsa.rules = [
+  {
+    matches = [
+      { node.name = "~alsa_output.*" }
+    ]
+    actions = {
+      update-props = {
+        session.suspend-timeout-seconds = 0
+      }
+    }
+  }
+]
+EOF
+```
+
+Apply by restarting WirePlumber:
+```bash
+pkill wireplumber
+# Auto-restarts via XDG autostart
+```
+
+Verify the setting is active:
+```bash
+wpctl status
+```
+
+## PipeWire Crash Recovery Monitor
+
+PipeWire can crash unexpectedly, leaving the system without audio. This monitor script detects when PipeWire dies and automatically restarts the audio stack.
+
+`~/.local/bin/audio-monitor.sh`:
+```bash
+#!/bin/sh
+# PipeWire monitor - restarts audio stack if it dies
+# Uses XDG autostart for session integration
+
+stop_audio() {
+    pkill -9 -x wireplumber 2>/dev/null
+    pkill -9 -x pipewire 2>/dev/null
+    sleep 2
+    # Clean stale sockets after killing processes
+    rm -f "$XDG_RUNTIME_DIR"/pipewire-0* 2>/dev/null
+    rm -f "$XDG_RUNTIME_DIR"/pulse/native "$XDG_RUNTIME_DIR"/pulse/pid 2>/dev/null
+}
+
+start_audio() {
+    pgrep -x pipewire >/dev/null || { pipewire & sleep 2; }
+    pgrep -x pipewire >/dev/null || return 1
+    pgrep -f "pipewire-pulse.conf" >/dev/null || { pipewire -c pipewire-pulse.conf & sleep 2; }
+    pgrep -x wireplumber >/dev/null || { wireplumber & }
+}
+
+# Wait for session to settle on login
+sleep 5
+
+while true; do
+    if ! pgrep -x pipewire >/dev/null; then
+        logger "audio-monitor: restarting PipeWire"
+        stop_audio
+        start_audio
+        sleep 5
+    fi
+    sleep 5
+done
+```
+
+`~/.config/autostart/audio-monitor.desktop`:
+```ini
+[Desktop Entry]
+Type=Application
+Name=Audio Monitor
+Exec=/home/john/.local/bin/audio-monitor.sh
+Hidden=false
+NoDisplay=true
+X-GNOME-Autostart-enabled=true
+```
+
+**Manual recovery** (if monitor isn't running):
+```bash
+pkill -x wireplumber; pkill -x pipewire
+rm -f /run/user/1000/pipewire-0* /run/user/1000/pulse/native
+pipewire &
+sleep 2; pipewire -c pipewire-pulse.conf &
+sleep 2; wireplumber &
+```
+
 ## Notes
 - Void uses PipeWire by default (not PulseAudio)
 - `alsa-pipewire` provides ALSA app compatibility
 - Firefox uses PipeWire directly for audio
 - No separate pulseaudio-pipewire package needed in Void
+- `pipewire-pulse` provides PulseAudio compatibility layer (emulation)

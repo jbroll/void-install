@@ -26,7 +26,8 @@ LSP servers provide real-time code intelligence (type errors, go-to-definition, 
   "enabledPlugins": {
     "typescript-lsp@claude-plugins-official": true,
     "pyright-lsp@claude-plugins-official": true,
-    "rust-lsp@claude-plugins-official": true
+    "rust-lsp@claude-plugins-official": true,
+    "clangd-lsp@claude-plugins-official": true
   }
 }
 ```
@@ -38,6 +39,7 @@ LSP servers provide real-time code intelligence (type errors, go-to-definition, 
 | typescript-lsp | typescript-language-server | `npm install -g typescript-language-server typescript` |
 | pyright-lsp | pyright | `npm install -g pyright` |
 | rust-lsp | rust-analyzer | `rustup component add rust-analyzer` |
+| clangd-lsp | clangd | `sudo xbps-install -S clang-tools-extra` |
 
 **Install all:**
 ```bash
@@ -49,11 +51,14 @@ npm install -g pyright
 
 # Rust LSP
 rustup component add rust-analyzer
+
+# C/C++ LSP
+sudo xbps-install -S clang-tools-extra
 ```
 
 **Verify:**
 ```bash
-which typescript-language-server pyright rust-analyzer
+which typescript-language-server pyright rust-analyzer clangd
 ```
 
 ## Hooks Configuration
@@ -105,3 +110,4 @@ sudo xbps-install -y shellcheck
 
 - On Void Linux, use npm to install pyright since the system Python is externally managed (PEP 668)
 - LSP servers require the corresponding language runtimes (Node.js, Rust) to be installed first
+- clangd requires `compile_commands.json` for project awareness (see [dev-tools.md](dev-tools.md#llvmclang-toolchain))

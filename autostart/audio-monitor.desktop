@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Audio Monitor
+Exec=/home/john/.local/bin/audio-monitor.sh
+Hidden=false
+NoDisplay=true
+X-GNOME-Autostart-enabled=true
