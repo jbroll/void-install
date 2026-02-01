@@ -10,6 +10,7 @@ git-2.51.2_1              # Version control
 git-filter-repo-2.34.0_5  # Git history rewriting
 git-lfs-3.6.1_1           # Git Large File Storage
 github-cli-2.83.2_1       # GitHub CLI (gh command)
+vim-9.1.2011_2            # Text editor
 cmake-4.1.2_1             # Build system generator
 gdb-16.3_2                # Debugger
 shellcheck-0.11.0_1       # Shell script linter
@@ -65,6 +66,7 @@ gobject-introspection-1.86.0_2  # GObject introspection
 ## Verify Installation
 ```bash
 git --version
+vim --version | head -1
 cmake --version
 clang --version
 gcc --version

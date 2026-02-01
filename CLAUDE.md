@@ -30,6 +30,7 @@ This is a documentation repository for a Void Linux installation on an ASUS Zenb
 | `printing.md` | CUPS setup |
 | `dev-tools.md` | Development environment (Node.js, Rust, LSP servers) |
 | `claude-code.md` | Claude Code CLI setup and LSP configuration |
+| `opencode.md` | OpenCode CLI setup with remote Ollama |
 | `kicad.md` | KiCad EDA suite installation |
 | `onedrive.md` | OneDrive client (built from source for working auth) |
 | `autostart/` | XDG autostart overrides backup (excludes wider-managed entries) |
