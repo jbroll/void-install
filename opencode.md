@@ -43,12 +43,13 @@ curl -s http://192.168.1.169:11434/api/tags | jq
 
 ## Installed Models
 
-| Model | Size | Purpose |
-|-------|------|---------|
-| qwen2.5-coder:7b | 4.7 GB | Primary coding (92+ languages, fast) |
-| deepseek-coder-v2:16b | 8.9 GB | Complex tasks (300+ languages, MoE) |
-| qwen3:14b | 9.3 GB | Reasoning + coding with "thinking" |
-| llama3.2:3b | 2.0 GB | Quick titles/summaries |
+| Model | Size | Purpose | Tool Calling |
+|-------|------|---------|--------------|
+| qwen3:14b-32k | 9.3 GB | Reasoning + coding (32k context) | Yes |
+| qwen3:14b | 9.3 GB | Base model (4k default context) | Limited |
+| qwen2.5-coder:7b | 4.7 GB | Fast coding (92+ languages) | No |
+| deepseek-coder-v2:16b | 8.9 GB | Complex tasks (300+ languages, MoE) | No |
+| llama3.2:3b | 2.0 GB | Quick titles/summaries | No |
 
 **Pull additional models:**
 ```bash
@@ -70,6 +71,11 @@ ssh gpu "OLLAMA_HOST=192.168.1.169:11434 ollama pull <model>"
         "baseURL": "http://192.168.1.169:11434/v1"
       },
       "models": {
+        "qwen3:14b-32k": {
+          "name": "Qwen3 14B (32k ctx)",
+          "tool_call": true,
+          "limit": { "context": 32768, "output": 8192 }
+        },
         "qwen2.5-coder:7b": {
           "name": "Qwen2.5 Coder 7B",
           "limit": { "context": 32768, "output": 8192 }
@@ -78,10 +84,6 @@ ssh gpu "OLLAMA_HOST=192.168.1.169:11434 ollama pull <model>"
           "name": "DeepSeek Coder V2 16B",
           "limit": { "context": 65536, "output": 8192 }
         },
-        "qwen3:14b": {
-          "name": "Qwen3 14B",
-          "limit": { "context": 32768, "output": 8192 }
-        },
         "llama3.2:3b": {
           "name": "Llama 3.2 3B",
           "limit": { "context": 8192, "output": 4096 }
@@ -89,7 +91,7 @@ ssh gpu "OLLAMA_HOST=192.168.1.169:11434 ollama pull <model>"
       }
     }
   },
-  "model": "ollama/qwen2.5-coder:7b"
+  "model": "ollama/qwen3:14b-32k"
 }
 ```
 
@@ -133,9 +135,29 @@ opencode -c
 | `Escape` | Interrupt generation |
 | `Ctrl+C` | Exit |
 
+## Tool Calling Fix
+
+OpenCode sends extensive tool definitions (file operations, search, etc.) that can exceed Ollama's default 4096 token context window. This causes tools to be silently ignored.
+
+**Solution:** Create a custom model with increased context:
+
+```bash
+# On GPU host
+ssh gpu
+cat > /tmp/Modelfile << 'EOF'
+FROM qwen3:14b
+PARAMETER num_ctx 32768
+EOF
+
+OLLAMA_HOST=192.168.1.169:11434 ollama create qwen3:14b-32k -f /tmp/Modelfile
+```
+
+The `qwen3:14b-32k` model has 32k context window and properly supports tool calling with OpenCode.
+
 ## Notes
 
 - OpenCode uses `@ai-sdk/openai-compatible` to connect to Ollama's OpenAI-compatible API
 - The `/v1` suffix on the baseURL is required for OpenAI compatibility
 - Models are defined in config to set context/output limits (Ollama doesn't report these)
 - Port 11434 is Ollama's default/well-known port
+- **Critical**: Models need `num_ctx` >= 16384 for tool calling to work with OpenCode
