@@ -32,6 +32,7 @@ This is a documentation repository for a Void Linux installation on an ASUS Zenb
 | `claude-code.md` | Claude Code CLI setup and LSP configuration |
 | `opencode.md` | OpenCode CLI setup with remote Ollama |
 | `kicad.md` | KiCad EDA suite installation |
+| `openscad.md` | OpenSCAD 3D CAD modeller (Flatpak beta for Manifold support) |
 | `onedrive.md` | OneDrive client (built from source for working auth) |
 | `autostart/` | XDG autostart overrides backup (excludes wider-managed entries) |
 | `scripts/` | Custom shell scripts (audio-monitor.sh, etc.) |
