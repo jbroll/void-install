@@ -14,13 +14,36 @@ sudo flatpak remote-add --if-not-exists flathub-beta https://flathub.org/beta-re
 sudo flatpak install flathub-beta org.openscad.OpenSCAD
 ```
 
+## Wrapper Script
+
+A wrapper script in `~/bin/openscad` allows running the Flatpak as a regular command:
+
+```bash
+#!/bin/sh
+exec flatpak run org.openscad.OpenSCAD "$@"
+```
+
 ## Usage
 
 ```bash
-flatpak run org.openscad.OpenSCAD
+openscad                    # Launch GUI
+openscad model.scad         # Open file in GUI
 ```
 
 Or find "OpenSCAD" in the application menu.
+
+## CLI Usage
+
+Render models without the GUI:
+
+```bash
+openscad -o output.stl model.scad             # Export to STL
+openscad -o output.png model.scad             # Render to PNG
+openscad -D 'size=20' -o out.stl model.scad   # With variables
+openscad --backend=manifold -o out.stl model.scad  # Use Manifold
+```
+
+Supported export formats: stl, off, wrl, amf, 3mf, csg, dxf, svg, pdf, png, pov
 
 ## Manifold Backend
 
