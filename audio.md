@@ -1,6 +1,6 @@
 # Audio Setup
 Date: 2024-12-24
-Updated: 2026-01-27 (WirePlumber no-suspend config, PipeWire crash recovery monitor)
+Updated: 2026-02-20 (Improved audio-monitor with comprehensive health checks)
 
 ## Status
 Audio packages already installed with base system. Only sof-firmware was missing (installed with firmware step).
@@ -139,19 +139,24 @@ wpctl status
 
 ## PipeWire Crash Recovery Monitor
 
-PipeWire can crash unexpectedly, leaving the system without audio. This monitor script detects when PipeWire dies and automatically restarts the audio stack.
+PipeWire can crash or become unresponsive, leaving the system without audio. This monitor script performs comprehensive health checks and automatically restarts the audio stack when issues are detected.
+
+**Health checks:**
+1. PipeWire process is running
+2. PulseAudio compatibility layer responds (pactl can connect)
+3. WirePlumber detects real hardware (not just dummy output)
 
 `~/.local/bin/audio-monitor.sh`:
 ```bash
 #!/bin/sh
-# PipeWire monitor - restarts audio stack if it dies
+# PipeWire monitor - restarts audio stack if it dies or becomes unresponsive
 # Uses XDG autostart for session integration
 
 stop_audio() {
     pkill -9 -x wireplumber 2>/dev/null
     pkill -9 -x pipewire 2>/dev/null
     sleep 2
-    # Clean stale sockets after killing processes
+    # Clean stale sockets and lock files after killing processes
     rm -f "$XDG_RUNTIME_DIR"/pipewire-0* 2>/dev/null
     rm -f "$XDG_RUNTIME_DIR"/pulse/native "$XDG_RUNTIME_DIR"/pulse/pid 2>/dev/null
 }
@@ -160,20 +165,39 @@ start_audio() {
     pgrep -x pipewire >/dev/null || { pipewire & sleep 2; }
     pgrep -x pipewire >/dev/null || return 1
     pgrep -f "pipewire-pulse.conf" >/dev/null || { pipewire -c pipewire-pulse.conf & sleep 2; }
-    pgrep -x wireplumber >/dev/null || { wireplumber & }
+    pgrep -x wireplumber >/dev/null || { wireplumber & sleep 3; }
+}
+
+check_audio_health() {
+    # Check 1: pipewire process exists
+    if ! pgrep -x pipewire >/dev/null; then
+        return 1
+    fi
+
+    # Check 2: PulseAudio compatibility layer is responsive
+    if ! timeout 2 pactl info >/dev/null 2>&1; then
+        return 1
+    fi
+
+    # Check 3: WirePlumber detects real hardware (not just dummy output)
+    if ! wpctl status 2>/dev/null | grep -q "sof-hda-dsp\|alsa"; then
+        return 1
+    fi
+
+    return 0
 }
 
 # Wait for session to settle on login
 sleep 5
 
 while true; do
-    if ! pgrep -x pipewire >/dev/null; then
-        logger "audio-monitor: restarting PipeWire"
+    if ! check_audio_health; then
+        logger "audio-monitor: audio system unhealthy, restarting"
         stop_audio
         start_audio
         sleep 5
     fi
-    sleep 5
+    sleep 10
 done
 ```
 
