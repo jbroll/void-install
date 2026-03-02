@@ -5,7 +5,7 @@ Electronic design automation (EDA) suite for schematic capture, PCB layout, and 
 
 ## Installed Packages
 ```
-kicad-9.0.6_2              # Main application
+kicad-9.0.7_2              # Main application
 kicad-library-9.0.6_1      # Meta-package for all libraries
 kicad-symbols-9.0.6_1      # Schematic symbol libraries
 kicad-footprints-9.0.6_1   # PCB footprint libraries
