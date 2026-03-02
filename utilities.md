@@ -31,7 +31,7 @@ noto-fonts-ttf-2025.12.01_1  # Unicode fonts with symbol coverage
 noto-fonts-emoji-2.051_1  # Color emoji font
 flatpak-1.16.1_1          # App sandboxing and distribution
 netscanner-0.6.3_1        # Network scanner with TUI
-vlc-3.0.23_1              # Media player
+vlc-3.0.23_2              # Media player
 screen-5.0.1_1            # Terminal multiplexer (sessions)
 tmux-3.6a_1               # Terminal multiplexer (modern)
 scrot-1.12.1_1            # CLI screenshot utility
