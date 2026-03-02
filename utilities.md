@@ -37,6 +37,7 @@ tmux-3.6a_1               # Terminal multiplexer (modern)
 scrot-1.12.1_1            # CLI screenshot utility
 espeak-ng-1.52.0_1        # Text-to-speech engine
 dialog-1.3.20251001_1     # CLI dialog boxes (menus, forms)
+mosh-1.4.0_8              # Mobile shell (UDP, roaming, tolerates packet loss)
 ```
 
 ## Flatpak Apps
@@ -123,6 +124,7 @@ tmux new -s name      # Start tmux session
 scrot -s screenshot.png   # Screenshot selection
 espeak-ng "Hello"     # Text-to-speech
 dialog --msgbox "Hi" 10 30  # Display dialog box
+mosh user@host             # Connect via mosh (requires mosh on server too)
 ```
 
 ## Swap Configuration
