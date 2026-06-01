@@ -38,11 +38,13 @@ scrot-1.12.1_1            # CLI screenshot utility
 espeak-ng-1.52.0_1        # Text-to-speech engine
 dialog-1.3.20251001_1     # CLI dialog boxes (menus, forms)
 mosh-1.4.0_8              # Mobile shell (UDP, roaming, tolerates packet loss)
+graphviz-14.1.4_1         # Graph visualization (dot, neato, fdp, etc.)
+rpi-imager-1.8.5_1        # Raspberry Pi SD card imaging utility (GUI)
 ```
 
 ## Flatpak Apps
 ```
-com.discordapp.Discord    # Voice/text chat (Flathub)
+dev.vencord.Vesktop    # Discord client (lighter Electron, better Linux audio/screenshare)
 ```
 
 ### Flatpak Setup
@@ -51,24 +53,26 @@ sudo xbps-install -S flatpak
 flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 ```
 
-### Install Discord
+### Install Vesktop
+Lighter, community Discord client (Vencord). Replaced the official Discord
+flatpak to cut Electron memory use on this 16GB laptop.
 ```bash
-flatpak install flathub com.discordapp.Discord
+flatpak install flathub dev.vencord.Vesktop
 ```
 
-### Autostart Discord
-Create `~/.config/autostart/discord.desktop`:
+### Autostart Vesktop
+Create `~/.config/autostart/vesktop.desktop` (set `Hidden=false` to enable):
 ```ini
 [Desktop Entry]
 Type=Application
-Name=Discord
-Exec=flatpak run com.discordapp.Discord
-Hidden=false
+Name=Vesktop
+Exec=flatpak run dev.vencord.Vesktop
+Hidden=true
 NoDisplay=false
 X-GNOME-Autostart-enabled=true
 ```
 
-**Note:** Log out and back in after installing Flatpak for Discord to appear in the application menu.
+**Note:** Log out and back in after installing Flatpak for Vesktop to appear in the application menu.
 
 ## Pre-installed
 ```
@@ -125,13 +129,33 @@ scrot -s screenshot.png   # Screenshot selection
 espeak-ng "Hello"     # Text-to-speech
 dialog --msgbox "Hi" 10 30  # Display dialog box
 mosh user@host             # Connect via mosh (requires mosh on server too)
+dot -Tpng input.dot -o output.png  # Render dot graph to PNG
+dot -Tsvg input.dot -o output.svg  # Render dot graph to SVG
+rpi-imager                         # Write Raspberry Pi OS images to SD card
 ```
 
 ## Swap Configuration
 
-16GB swap file configured at `/swapfile`.
+Two-tier swap: **zram** (compressed RAM, preferred) backed by a 16GB disk
+`/swapfile` (overflow). zram handles swap traffic in RAM at ~3:1 compression,
+which is far faster than the disk file and avoids stutter on this 16GB laptop.
 
-### Setup Commands
+### zram (primary)
+```bash
+sudo xbps-install -S zramen
+sudo ln -s /etc/sv/zramen /var/service/
+```
+
+Config at `/etc/sv/zramen/conf`:
+```sh
+export ZRAM_COMP_ALGORITHM=zstd   # good ratio/speed balance
+export ZRAM_SIZE=50               # 50% of RAM
+export ZRAM_MAX_SIZE=8192         # cap at 8GB
+export ZRAM_PRIORITY=100          # used before the disk swapfile (-2)
+```
+
+### Disk swapfile (overflow)
+16GB swap file at `/swapfile`, priority -2 (only used after zram fills).
 ```bash
 sudo dd if=/dev/zero of=/swapfile bs=1M count=16384 status=progress
 sudo chmod 600 /swapfile
@@ -142,6 +166,25 @@ echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 
 ### Verify
 ```bash
-swapon --show        # Show active swap
+swapon --show        # Show active swap (zram0 prio 100, swapfile prio -2)
+zramctl              # Show zram device, algorithm, compression
 free -h              # Show memory/swap usage
 ```
+
+## Kernel Tuning
+
+### Swappiness
+Lowered from default 60 to 10 to keep pages in RAM/zram rather than eagerly
+swapping. Persistent via `/etc/sysctl.d/99-swappiness.conf`:
+```bash
+echo 'vm.swappiness=10' | sudo tee /etc/sysctl.d/99-swappiness.conf
+sudo sysctl -w vm.swappiness=10
+```
+
+## Removed Services (performance)
+
+Disabled/uninstalled unused accessibility daemons:
+- **espeakup** — console screen-reader speech (`sudo xbps-remove -R espeakup`)
+- **brltty** — braille display daemon; also known to grab USB serial devices
+  (interferes with Arduino `/dev/ttyACM*`). Service symlink removed from
+  `/var/service/`.
