@@ -188,3 +188,34 @@ Disabled/uninstalled unused accessibility daemons:
 - **brltty** — braille display daemon; also known to grab USB serial devices
   (interferes with Arduino `/dev/ttyACM*`). Service symlink removed from
   `/var/service/`.
+
+## SSD Maintenance (TRIM)
+
+The NVMe SSD had never been trimmed (no cron daemon, no `discard` in fstab).
+A first manual `fstrim -av` reclaimed ~326 GiB of stale blocks. A runit service
+now runs TRIM at boot and weekly thereafter (no cron daemon needed).
+
+`/etc/sv/fstrim/run`:
+```sh
+#!/bin/sh
+# Weekly SSD TRIM. runit runs this at boot, then re-runs after each sleep.
+exec 2>&1
+echo "fstrim: starting periodic trim"
+fstrim -av
+sleep 7d
+```
+Enable:
+```bash
+sudo chmod +x /etc/sv/fstrim/run
+sudo ln -s /etc/sv/fstrim /var/service/
+```
+Manual trim any time: `sudo fstrim -av`
+
+## XBPS Cache Cleanup
+
+`/var/cache/xbps` accumulates old package versions (was 6.5 GB). Clean obsolete
+versions while keeping the current one for each package:
+```bash
+sudo xbps-remove -O    # remove obsolete cached packages (keeps current)
+sudo xbps-remove -o    # also remove orphaned dependencies (optional)
+```
