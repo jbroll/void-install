@@ -235,3 +235,32 @@ The daemon checks every 5 seconds. It only runs xrandr when:
 2. DP-1 is connected but has no active mode
 
 This respects intentional screen blanking during idle.
+
+## Fan Stuck at Full Speed on AC Plug/Unplug
+
+### Problem
+Plugging or unplugging AC power causes the ASUS EC to lose fan control, running the fan at ~5800 RPM indefinitely even when temps are normal (39-45°C).
+
+### Root Cause
+The ASUS embedded controller resets fan control state on AC adapter events. The `asus_wmi` kernel module sets `pwm1_enable=2` (firmware auto) but the EC ignores it until toggled.
+
+### Fix: acpid handler
+Added to `/etc/acpi/handler.sh` in the `ac_adapter` section (after the CPU freq scaling block):
+
+```sh
+# Reset ASUS EC fan control (gets stuck at full speed on AC change)
+fan_hwmon=$(grep -rl "^asus$" /sys/class/hwmon/hwmon*/name 2>/dev/null | head -1 | xargs dirname 2>/dev/null)
+if [ -n "$fan_hwmon" ] && [ -f "$fan_hwmon/pwm1_enable" ]; then
+    logger "Resetting ASUS fan control after AC change"
+    echo 0 > "$fan_hwmon/pwm1_enable"
+    sleep 1
+    echo 2 > "$fan_hwmon/pwm1_enable"
+fi
+```
+
+Uses dynamic hwmon path lookup so it survives hwmon numbering changes across reboots.
+
+### Manual reset (if already stuck)
+`loginctl suspend` then wake — resets the EC on resume. A reboot also works.
+
+Note: toggling `pwm1_enable` manually or reloading `asus_wmi` does NOT work while the module is in use.
