@@ -35,6 +35,7 @@ This is a documentation repository for a Void Linux installation on an ASUS Zenb
 | `openscad.md` | OpenSCAD 3D CAD modeller (Flatpak beta for Manifold support) |
 | `mdview.md` | Markdown viewer (Tcl/Tk, patched for Tcl 9) |
 | `onedrive.md` | OneDrive client (built from source for working auth) |
+| `ender3v2/` | Sub-project: Klipper/Moonraker/Mainsail on a Pi Zero 2 W driving an Ender 3 V2. Has its own README and docs/. |
 | `autostart/` | XDG autostart overrides backup (excludes wider-managed entries) |
 | `scripts/` | Custom shell scripts (audio-monitor.sh, etc.) |
 | `wireplumber/` | WirePlumber config backups (no-suspend.conf) |

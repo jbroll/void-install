@@ -27,6 +27,12 @@ Configuration guides for Void Linux on ASUS Zenbook 14 UX3405MA (Intel Meteor La
 | [kicad.md](kicad.md) | KiCad EDA suite |
 | [onedrive.md](onedrive.md) | OneDrive client (built from source) |
 
+## Sub-projects
+
+| Directory | Description |
+|-----------|-------------|
+| [ender3v2/](ender3v2/README.md) | Klipper/Moonraker/Mainsail on a Pi Zero 2 W driving an Ender 3 V2 |
+
 ## Key Fixes
 
 1. **No audio**: Install kernel 6.16+ for CS35L41 speaker amp timing
