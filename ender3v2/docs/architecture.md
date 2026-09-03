@@ -61,7 +61,12 @@ would produce a board that never enumerates.
 pin map for this board, and adds:
 
 - `[bltouch]` with `x_offset: -40.0` and `y_offset: -5.0`, read from the
-  printer's own Marlin EEPROM via `M851` before Marlin was replaced.
+  printer's own Marlin EEPROM via `M851` before Marlin was replaced, and
+  `z_offset` 2.338 from `PROBE_CALIBRATE`.
+- Probing at `speed: 5` with `samples: 3` and `samples_result: median`. The
+  first attempt used the Neo sample's `speed: 20`, which gave a probe standard
+  deviation of 0.032 mm because the trigger point moved with deceleration.
+  Dropping to 5 mm/s brought it to 0.0046 mm.
 - `[safe_z_home]` homing at nozzle position 157.5, 122.5. That is bed centre
   117.5, 117.5 shifted by the probe offsets, so the probe sits over the middle
   of the bed rather than the nozzle.

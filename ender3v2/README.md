@@ -24,6 +24,13 @@ Open <http://ender3v2.local/>.
 | [docs/architecture.md](docs/architecture.md) | How the pieces fit and why |
 | [docs/backlog.md](docs/backlog.md) | Outstanding work |
 
+## Calibration
+
+| Value | Setting | Measured |
+|-------|---------|----------|
+| Probe Z offset | `z_offset = 2.338` | `PROBE_CALIBRATE`, 2026-09-02 |
+| Probe repeatability | standard deviation 0.0046 mm over 10 samples | `PROBE_ACCURACY` |
+
 ## Firmware currently flashed
 
 | Field | Value |

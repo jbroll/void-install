@@ -1,12 +1,5 @@
 # Backlog
 
-## Probe Z offset is uncalibrated
-
-`z_offset` in `[bltouch]` is `0`, a placeholder. The true value is a couple of
-millimetres, so Klipper's Z zero currently sits above the glass and a print
-would extrude into the air. Homing is safe. Run `PROBE_CALIBRATE` before
-printing. See [quickstart.md](quickstart.md#2-calibrate-the-probe-offset).
-
 ## PID values are generic
 
 The `[extruder]` and `[heater_bed]` PID constants came from Klipper's sample
@@ -16,13 +9,6 @@ scales its constants differently. Run `PID_CALIBRATE` for both heaters.
 ## Bed mesh has never been probed
 
 `BED_MESH_CALIBRATE` has not run, so there is no mesh to load.
-
-## CR Touch pin assignment is unverified
-
-`[bltouch]` uses `sensor_pin: ^PB1` and `control_pin: PB0`, taken from Klipper's
-Ender 3 V2 Neo sample. The offsets are confirmed from Marlin's EEPROM, but the
-pins are an assumption about how the probe is wired. If the probe does not
-deploy or never triggers, this is the first thing to check.
 
 ## Moonraker cannot manage system services
 
