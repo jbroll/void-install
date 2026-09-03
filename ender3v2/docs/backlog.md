@@ -1,5 +1,34 @@
 # Backlog
 
+## Where this stands
+
+The printer runs Klipper and is calibrated: `z_offset` 2.338, both heaters
+tuned, bed mesh saved, probe repeatability 0.0046 mm. Mainsail is at
+<http://ender3v2.local/> and reports ready. Nothing has been printed yet.
+
+Two threads are open, in this order.
+
+**Resume here.** Wire the ADXL345 per the table in
+[user-manual.md](user-manual.md#wiring), `INT1` and `INT2` unconnected. Then:
+
+```sh
+ssh john@ender3v2.local
+# uncomment [include adxl345.cfg] in ~/printer_data/config/printer.cfg
+```
+
+```
+FIRMWARE_RESTART
+ACCELEROMETER_QUERY
+```
+
+`ACCELEROMETER_QUERY` should return roughly 9.8 m/s² on one axis. Then
+`TEST_RESONANCES AXIS=X` with the sensor on the head, remount to the bed, and
+`TEST_RESONANCES AXIS=Y`.
+
+**Then the first print.** OrcaSlicer 2.4.2 is installed on the laptop and can
+upload to Moonraker directly. A single-layer test square settles the first-layer
+offset, which the paper test could only get to about ±0.05 mm.
+
 ## First layer offset not yet confirmed on a print
 
 `z_offset` came from the paper test, which resolves to roughly ±0.05 mm.
@@ -10,10 +39,13 @@ the result into `z_offset`.
 
 ## ADXL345 not yet wired
 
-Everything else for input shaping is in place: SPI enabled, `klipper-mcu.service`
-running, numpy working, and `adxl345.cfg` written. `printer.cfg` has the include
-commented out. Wire the sensor to SPI0, uncomment the include, and follow
-[user-manual.md](user-manual.md#input-shaping).
+Everything else for input shaping is in place: SPI enabled with `/dev/spidev0.0`
+present, `klipper-mcu.service` running and providing `/tmp/klipper_host_mcu`,
+numpy 2.5.2 importing, and `adxl345.cfg` written. `printer.cfg` has the include
+commented out so Klipper stays startable while the sensor is absent.
+
+Klipper does not use `INT1` or `INT2`; it reads the FIFO over SPI and
+`[adxl345]` has no interrupt setting.
 
 ## Bed has a front-edge tilt
 

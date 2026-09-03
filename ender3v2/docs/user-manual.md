@@ -42,8 +42,24 @@ reporting the offending line in `klippy.log` and in Mainsail.
 
 ## Input shaping
 
-Requires the ADXL345 wired to SPI0 and `[include adxl345.cfg]` uncommented in
-`printer.cfg`.
+### Wiring
+
+ADXL345 to the Pi Zero 2 W, SPI0:
+
+| Module pin | Board pin | Signal |
+|---|---|---|
+| VCC | 1 | 3V3 |
+| GND | 6 | GND |
+| SDA | 19 | MOSI |
+| SDO | 21 | MISO |
+| SCL | 23 | SCLK |
+| CS | 24 | CE0 |
+| INT1 | — | n/c |
+| INT2 | — | n/c |
+
+### Measuring
+
+Requires `[include adxl345.cfg]` uncommented in `printer.cfg`.
 
 ```
 FIRMWARE_RESTART
