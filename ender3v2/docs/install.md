@@ -10,7 +10,7 @@ it can be repeated after a card failure.
 - Micro-USB male to USB-A female adapter, plus the printer's USB cable
 - Ender 3 V2 with a Creality 4.2.x board
 
-## 1. Raspberry Pi OS
+## Raspberry Pi OS
 
 Write Raspberry Pi OS to the card. This install runs Raspbian 13 (trixie),
 32-bit armv7l.
@@ -34,7 +34,7 @@ customization, or edit the card directly:
 The last point matters. Without it the journal is volatile and a Pi that boots
 but fails to join the network leaves nothing behind to diagnose.
 
-## 2. USB host mode
+## USB host mode
 
 The printer connects over USB, so the Pi's single data port must be a host, not
 a peripheral. Leave `dwc2` alone. If `config.txt` contains
@@ -44,7 +44,7 @@ a peripheral. Leave `dwc2` alone. If `config.txt` contains
 Confirm with `lsusb`. A working host shows a root hub; with the printer on it
 also shows `1a86:7523 QinHeng Electronics CH340 serial converter`.
 
-## 3. System packages
+## System packages
 
 ```sh
 sudo apt-get update
@@ -57,7 +57,7 @@ sudo apt-get install -y git build-essential python3-dev python3-venv \
 
 The ARM toolchain is the bulk of the download and takes a while on a Zero 2 W.
 
-## 4. Klipper
+## Klipper
 
 ```sh
 git clone --depth 200 https://github.com/Klipper3d/klipper.git ~/klipper
@@ -92,7 +92,7 @@ Restart=always
 RestartSec=10
 ```
 
-## 5. Moonraker
+## Moonraker
 
 ```sh
 git clone --depth 200 https://github.com/Arksine/moonraker.git ~/moonraker
@@ -129,7 +129,7 @@ Restart=always
 RestartSec=10
 ```
 
-## 6. Mainsail
+## Mainsail
 
 ```sh
 git clone https://github.com/mainsail-crew/mainsail-config.git ~/mainsail-config
@@ -155,7 +155,7 @@ after 60 seconds on `PID_CALIBRATE` and `BED_MESH_CALIBRATE`, which run for
 minutes. Klipper carries on regardless, so the 504 is misleading rather than
 fatal, but it leaves you without the result.
 
-## 7. Firewall
+## Firewall
 
 `/etc/nftables.conf` accepts traffic from the LAN and drops everything else,
 loaded at boot by `nftables.service`. The router already drops unsolicited
@@ -196,7 +196,7 @@ sudo systemctl enable --now nftables
 The ISP-delegated IPv6 prefix appears here as well as in `moonraker.conf`. If it
 rotates, both need updating.
 
-## 8. Accelerometer for input shaping
+## Accelerometer for input shaping
 
 The ADXL345 hangs off the Pi's SPI0, which means Klipper needs a second MCU
 process running on the Pi itself to reach the bus.
@@ -236,7 +236,7 @@ sections. `printer.cfg` carries its include commented out, because Klipper
 refuses to start when the sensor is configured but absent. Uncomment it after
 wiring.
 
-## 9. Workstation
+## Workstation
 
 Slicing happens on the laptop, not the Pi. Void packages no slicer, so
 OrcaSlicer comes from Flathub:
@@ -249,7 +249,7 @@ It uploads g-code to Moonraker directly and generates its own calibration
 prints. Klipper also ships test models in `~/klipper/docs/prints/`, including
 `ringing_tower.stl` and `square.stl`.
 
-## 10. Printer firmware
+## Printer firmware
 
 See [user-manual.md](user-manual.md#rebuilding-and-flashing-firmware).
 

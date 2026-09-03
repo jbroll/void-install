@@ -63,6 +63,13 @@ xfconf-query -c <channel> -p <property> -s <value>   # Set Xfce config
 xfconf-query -c <channel> -lv                        # List all properties
 ```
 
+## Documentation Conventions
+
+**Do not number section headings.** Write `## Firewall`, never `## 7. Firewall`.
+Inserting a step means renumbering every heading below it and repointing any
+link that used the numbered anchor, which buries the actual change in diff
+noise. Order comes from position on the page.
+
 ## Key Workarounds Documented
 
 1. **Audio**: Kernel 6.16+ required for CS35L41 speaker amp timing fix
