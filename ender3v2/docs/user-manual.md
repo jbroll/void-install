@@ -40,6 +40,55 @@ end. Do not edit below the marker it adds.
 over SSH. Klipper validates on restart and refuses to start on a bad config,
 reporting the offending line in `klippy.log` and in Mainsail.
 
+## Input shaping
+
+Requires the ADXL345 wired to SPI0 and `[include adxl345.cfg]` uncommented in
+`printer.cfg`.
+
+```
+FIRMWARE_RESTART
+ACCELEROMETER_QUERY
+```
+
+`ACCELEROMETER_QUERY` returns a live acceleration vector. Roughly 9.8 m/s² on
+one axis and near zero on the others means the chip is talking.
+
+This is a bed slinger, so the sensor has to move to the mass under test. Mount
+it on the print head, then:
+
+```
+TEST_RESONANCES AXIS=X
+```
+
+Move it to the bed plate, then:
+
+```
+TEST_RESONANCES AXIS=Y
+```
+
+Each run writes a CSV to `/tmp/`. Process them into a recommendation:
+
+```sh
+~/klipper/scripts/calibrate_shaper.py /tmp/resonances_x_*.csv -o /tmp/shaper_x.png
+```
+
+Copy the CSVs to a workstation if the plots are slow to generate; the Pi has
+425 MB of RAM and matplotlib is the heaviest thing that runs on it.
+
+The script prints a recommended shaper type and frequency per axis, which go
+into an `[input_shaper]` section:
+
+```ini
+[input_shaper]
+shaper_freq_x: <from the X run>
+shaper_type_x: <from the X run>
+shaper_freq_y: <from the Y run>
+shaper_type_y: <from the Y run>
+```
+
+Y usually comes out lower than X on a bed slinger, because the bed carries more
+mass than the head.
+
 ## Rebuilding and flashing firmware
 
 Needed when a Klipper update changes the MCU protocol, or when a config option

@@ -8,6 +8,13 @@ calibrated zero. Neither is worth chasing on the bench. Print a single-layer
 test square, tune live with `SET_GCODE_OFFSET Z_ADJUST=±0.01 MOVE=1`, then fold
 the result into `z_offset`.
 
+## ADXL345 not yet wired
+
+Everything else for input shaping is in place: SPI enabled, `klipper-mcu.service`
+running, numpy working, and `adxl345.cfg` written. `printer.cfg` has the include
+commented out. Wire the sensor to SPI0, uncomment the include, and follow
+[user-manual.md](user-manual.md#input-shaping).
+
 ## Bed has a front-edge tilt
 
 The 5x5 mesh spans 0.195 mm, and nearly all of it is one tilt: the front row

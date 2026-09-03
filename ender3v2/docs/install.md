@@ -155,7 +155,60 @@ after 60 seconds on `PID_CALIBRATE` and `BED_MESH_CALIBRATE`, which run for
 minutes. Klipper carries on regardless, so the 504 is misleading rather than
 fatal, but it leaves you without the result.
 
-## 7. Printer firmware
+## 7. Accelerometer for input shaping
+
+The ADXL345 hangs off the Pi's SPI0, which means Klipper needs a second MCU
+process running on the Pi itself to reach the bus.
+
+Enable SPI by uncommenting `dtparam=spi=on` in `/boot/firmware/config.txt` and
+rebooting. `/dev/spidev0.0` should appear.
+
+Build the Linux MCU with its own config file so the printer's STM32 build is not
+overwritten:
+
+```sh
+cd ~/klipper
+echo CONFIG_MACH_LINUX=y > config.linux
+make KCONFIG_CONFIG=config.linux OUT=out-linux/ olddefconfig
+make KCONFIG_CONFIG=config.linux OUT=out-linux/
+sudo install -m 755 out-linux/klipper.elf /usr/local/bin/klipper_mcu
+sudo install -m 644 scripts/klipper-mcu.service /etc/systemd/system/
+sudo systemctl enable --now klipper-mcu
+```
+
+The service creates `/tmp/klipper_host_mcu` and is ordered before
+`klipper.service`.
+
+Resonance analysis needs numpy in the Klipper venv:
+
+```sh
+~/klippy-env/bin/pip install numpy
+sudo apt-get install -y libopenblas0
+```
+
+piwheels supplies a prebuilt armv7 wheel, so this is a download rather than a
+half-hour compile. The `libopenblas0` package is not optional: without it the
+wheel imports and fails with `libopenblas.so.0: cannot open shared object file`.
+
+`adxl345.cfg` holds the `[mcu rpi]`, `[adxl345]` and `[resonance_tester]`
+sections. `printer.cfg` carries its include commented out, because Klipper
+refuses to start when the sensor is configured but absent. Uncomment it after
+wiring.
+
+## 8. Workstation
+
+Slicing happens on the laptop, not the Pi. Void packages no slicer, so
+OrcaSlicer comes from Flathub:
+
+```sh
+sudo flatpak install -y flathub com.orcaslicer.OrcaSlicer
+```
+
+It uploads g-code to Moonraker directly and generates its own calibration
+prints. Klipper also ships test models in `~/klipper/docs/prints/`, including
+`ringing_tower.stl` and `square.stl`.
+
+## 9. Printer firmware
 
 See [user-manual.md](user-manual.md#rebuilding-and-flashing-firmware).
 
