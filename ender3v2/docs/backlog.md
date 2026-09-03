@@ -53,14 +53,12 @@ The 5x5 mesh spans 0.195 mm, and nearly all of it is one tilt: the front row
 reads about 0.15 mm high while the middle and back are flat within 0.07 mm. The
 mesh compensates, but `BED_SCREWS_ADJUST` would remove the cause.
 
-## Moonraker cannot manage system services
+## PackageKit not installed
 
-Moonraker logs PolicyKit warnings at startup: service management, shutdown,
-reboot and package updates through Mainsail are all disabled. Its
-`scripts/set-policykit-rules.sh` enables them. Not run, because it grants the
-Moonraker process the right to restart services and reboot the machine.
-
-Decide whether that trade is worth making.
+`set-policykit-rules.sh` has been run, so service management, shutdown and
+reboot work from Mainsail. The PackageKit actions remain unregistered because
+PackageKit itself is not installed, so apt updates through the update manager
+still fail. `sudo apt install packagekit` enables them.
 
 ## trusted_clients hardcodes an ISP-delegated IPv6 prefix
 
@@ -72,11 +70,19 @@ A stable fix would be to stop nginx forwarding the client address, so Moonraker
 sees 127.0.0.1 and the LAN check happens at nginx instead. That trades away
 per-client logging.
 
-## IPv6 exposure is unassessed
+## The router is the only thing keeping Mainsail private
 
-The Pi holds a routable IPv6 address and Mainsail has no login. Whether port 80
-is reachable from outside the LAN depends on the router's inbound IPv6 filtering,
-which has not been checked.
+Checked on 2026-09-02 from an external host with working IPv6: `ping6` to the
+Pi's global address lost 3 of 3 packets and HTTP to port 80 timed out with no
+response. The router drops unsolicited inbound IPv6.
+
+That is a single layer. The Pi runs no firewall, the nftables ruleset is empty,
+iptables is not installed, and nginx listens on `[::]:80`. Mainsail has no login
+and Moonraker grants service, reboot and shutdown rights through PolicyKit. If
+the router policy ever changes, all of that is directly exposed.
+
+Defence in depth would be a host firewall on the Pi allowing port 80 only from
+the LAN, or `force_logins: True` in Moonraker's `[authorization]`.
 
 ## Stock firmware not yet downloaded
 
