@@ -155,7 +155,48 @@ after 60 seconds on `PID_CALIBRATE` and `BED_MESH_CALIBRATE`, which run for
 minutes. Klipper carries on regardless, so the 504 is misleading rather than
 fatal, but it leaves you without the result.
 
-## 7. Accelerometer for input shaping
+## 7. Firewall
+
+`/etc/nftables.conf` accepts traffic from the LAN and drops everything else,
+loaded at boot by `nftables.service`. The router already drops unsolicited
+inbound IPv6; this is the second layer, so a change in router policy does not
+put Mainsail on the internet.
+
+```
+chain input {
+    type filter hook input priority filter; policy drop;
+    ct state established,related accept
+    ct state invalid drop
+    iif lo accept
+    ip protocol icmp accept
+    ip6 nexthdr ipv6-icmp accept
+    ip saddr 192.168.1.0/24 accept
+    ip6 saddr fe80::/10 accept
+    ip6 saddr <ISP prefix>::/64 accept
+}
+```
+
+ICMP and ICMPv6 are accepted without a source match because neighbour discovery
+and router advertisement arrive that way, and filtering them by source breaks
+IPv6 address configuration.
+
+Apply it behind a timed revert, or a bad rule locks you out of a machine you can
+only reach over the network:
+
+```sh
+sudo nft -c -f /etc/nftables.conf
+sudo systemd-run --on-active=120 --unit=nft-revert /usr/sbin/nft flush ruleset
+sudo nft -f /etc/nftables.conf
+# verify with a NEW ssh session, not the one already open: an established
+# connection survives a ruleset that would refuse a fresh one
+sudo systemctl stop nft-revert.timer
+sudo systemctl enable --now nftables
+```
+
+The ISP-delegated IPv6 prefix appears here as well as in `moonraker.conf`. If it
+rotates, both need updating.
+
+## 8. Accelerometer for input shaping
 
 The ADXL345 hangs off the Pi's SPI0, which means Klipper needs a second MCU
 process running on the Pi itself to reach the bus.
@@ -195,7 +236,7 @@ sections. `printer.cfg` carries its include commented out, because Klipper
 refuses to start when the sensor is configured but absent. Uncomment it after
 wiring.
 
-## 8. Workstation
+## 9. Workstation
 
 Slicing happens on the laptop, not the Pi. Void packages no slicer, so
 OrcaSlicer comes from Flathub:
@@ -208,7 +249,7 @@ It uploads g-code to Moonraker directly and generates its own calibration
 prints. Klipper also ships test models in `~/klipper/docs/prints/`, including
 `ringing_tower.stl` and `square.stl`.
 
-## 9. Printer firmware
+## 10. Printer firmware
 
 See [user-manual.md](user-manual.md#rebuilding-and-flashing-firmware).
 

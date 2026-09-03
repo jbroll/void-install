@@ -70,19 +70,18 @@ A stable fix would be to stop nginx forwarding the client address, so Moonraker
 sees 127.0.0.1 and the LAN check happens at nginx instead. That trades away
 per-client logging.
 
-## The router is the only thing keeping Mainsail private
+## ISP-delegated IPv6 prefix is hardcoded in two places
 
-Checked on 2026-09-02 from an external host with working IPv6: `ping6` to the
-Pi's global address lost 3 of 3 packets and HTTP to port 80 timed out with no
-response. The router drops unsolicited inbound IPv6.
+`2600:4040:5656:b00::/64` appears in `moonraker.conf` under `trusted_clients`
+and in `/etc/nftables.conf`. The ISP delegates it, so if it rotates, Mainsail
+starts returning 401 and the firewall stops accepting LAN IPv6. Both files need
+the new prefix.
 
-That is a single layer. The Pi runs no firewall, the nftables ruleset is empty,
-iptables is not installed, and nginx listens on `[::]:80`. Mainsail has no login
-and Moonraker grants service, reboot and shutdown rights through PolicyKit. If
-the router policy ever changes, all of that is directly exposed.
-
-Defence in depth would be a host firewall on the Pi allowing port 80 only from
-the LAN, or `force_logins: True` in Moonraker's `[authorization]`.
+A Moonraker password would not help here. `trusted_clients` is a whitelist and
+anything outside it is already refused with 401; user accounts exist to grant
+access to clients off the whitelist, not to add a second lock. Making a password
+meaningful would mean narrowing `trusted_clients` to 127.0.0.1, which forces
+every device and OrcaSlicer upload to authenticate.
 
 ## Stock firmware not yet downloaded
 
