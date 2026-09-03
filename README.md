@@ -38,4 +38,4 @@ Configuration guides for Void Linux on ASUS Zenbook 14 UX3405MA (Intel Meteor La
 1. **No audio**: Install kernel 6.16+ for CS35L41 speaker amp timing
 2. **Black screen on resume**: Use light-locker + acpid instead of xfce4-screensaver
 3. **No tap-to-click**: Remove xf86-input-synaptics, use libinput
-4. **External display won't wake**: DP monitors fail to wake from DPMS idle - disable MST (`i915.enable_dp_mst=0`), keep GPU power on via udev, and run auto-recovery daemon (see suspend.md sections 7-9)
+4. **External display won't wake**: DP monitors fail to wake from DPMS idle - disable MST (`i915.enable_dp_mst=0`), keep GPU power on via udev, and run auto-recovery daemon (see "Disable DP MST", "Prevent GPU runtime suspend" and "DP monitor auto-recovery daemon" in suspend.md)

@@ -11,7 +11,7 @@ Screen stays black or input broken after lid close/open resume on Intel Meteor L
 
 ## Solution
 
-### 1. Use light-locker instead of xfce4-screensaver for locking
+### Use light-locker instead of xfce4-screensaver for locking
 ```bash
 sudo xbps-install -y light-locker
 ```
@@ -28,7 +28,7 @@ Start light-locker (add to session autostart):
 light-locker &
 ```
 
-### 2. xfce4-power-manager settings
+### xfce4-power-manager settings
 Defer lid handling to elogind:
 ```bash
 xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/lid-action-on-ac -s 0 -t int -n
@@ -37,20 +37,20 @@ xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/logind-handle-lid-sw
 ```
 Then restart xfce4-power-manager.
 
-### 3. elogind configuration
+### elogind configuration
 Edit `/etc/elogind/logind.conf`:
 ```
 HandleLidSwitch=ignore
 ```
 Then reload: `sudo pkill -HUP elogind`
 
-### 4. acpid service
+### acpid service
 Enable acpid to handle ACPI events:
 ```bash
 sudo ln -s /etc/sv/acpid /var/service/
 ```
 
-### 5. acpid handler
+### acpid handler
 Edit `/etc/acpi/handler.sh` lid section to call `loginctl suspend`:
 ```bash
 button/lid)
@@ -66,7 +66,7 @@ button/lid)
     ;;
 ```
 
-### 6. Sleep hook
+### Sleep hook
 `/usr/lib/elogind/system-sleep/lid-resume.sh`:
 ```bash
 #!/bin/sh
@@ -97,7 +97,7 @@ This hook fixes:
 - DisplayPort monitors not powering off during suspend (pre: restore auto power management)
 - DisplayPort monitors not being recognized after suspend (post: force re-detection)
 
-### 7. Disable DP MST for DPMS wake fix
+### Disable DP MST for DPMS wake fix
 
 DisplayPort monitors fail to wake after DPMS power-save mode on Intel graphics. The DP link training fails to re-establish. See [freedesktop bug #23500](https://bugs.freedesktop.org/show_bug.cgi?id=23500) (open since 2010).
 
@@ -116,7 +116,7 @@ sudo reboot
 
 With MST disabled, DPMS should work correctly. MST is only needed for daisy-chaining multiple monitors over a single DP connection.
 
-**Note**: This fix reduces but doesn't fully eliminate the problem on all systems. See section 9 for auto-recovery if DP wake still fails.
+**Note**: This fix reduces but doesn't fully eliminate the problem on all systems. See "DP monitor auto-recovery daemon" if DP wake still fails.
 
 Verify the parameter is active after reboot:
 ```bash
@@ -124,7 +124,7 @@ cat /proc/cmdline | grep -o 'i915.enable_dp_mst=[0-9]'
 # Should show: i915.enable_dp_mst=0
 ```
 
-### 8. Prevent GPU runtime suspend for DP monitor wake
+### Prevent GPU runtime suspend for DP monitor wake
 
 Even with MST disabled, extended idle (~1 hour) can cause the GPU to enter runtime suspend, breaking the DP link. The DP monitor stays on but shows a black screen because the GPU stops sending signal.
 
@@ -141,7 +141,7 @@ sudo mkdir -p /etc/udev/rules.d
 echo 'ACTION=="add", SUBSYSTEM=="drm", KERNEL=="card0", ATTR{device/power/control}="on"' | sudo tee /etc/udev/rules.d/99-gpu-power.rules
 ```
 
-This works with the sleep hook (section 6):
+This works with the sleep hook above:
 - **Boot**: udev sets GPU power → "on"
 - **Normal idle**: GPU stays "on", DP link maintained, DPMS works
 - **Suspend**: sleep hook sets GPU → "auto" (allows power saving)
@@ -177,7 +177,7 @@ cat /sys/power/mem_sleep
 # Should show [s2idle]
 ```
 
-### 9. DP monitor auto-recovery daemon
+### DP monitor auto-recovery daemon
 
 If DP wake still fails after DPMS idle, use this daemon to automatically recover.
 

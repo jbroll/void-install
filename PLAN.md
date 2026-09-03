@@ -14,7 +14,7 @@ Generated: 2024-12-24
 
 ---
 
-## 1. NECESSARY
+## NECESSARY
 
 ### Firmware & Graphics (DONE)
 ```bash
@@ -44,7 +44,7 @@ sudo ln -s /etc/sv/cupsd /etc/runit/runsvdir/default/
 
 ---
 
-## 2. CONVENIENT
+## CONVENIENT
 
 ### Development - Base
 ```bash
@@ -77,7 +77,7 @@ sudo xbps-install -S tcl tk tcllib xclip
 
 ---
 
-## 3. EXTRA (as needed)
+## EXTRA (as needed)
 
 ### Custom Apps (DONE)
 - wider - Window layout save/restore (see `apps.md`)
