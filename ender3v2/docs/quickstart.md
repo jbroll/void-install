@@ -15,9 +15,13 @@ If Mainsail shows an error instead, see
 
 ## 2. Calibrate the probe offset
 
-This has to happen before the first Z move. `z_offset` ships as `0`, which tells
-Klipper the nozzle touches the bed at the moment the probe triggers. Homing Z
-with that value drives the nozzle into the glass.
+`z_offset` ships as `0`, which tells Klipper the nozzle touches the bed at the
+moment the probe triggers. The true figure is a couple of millimetres, so until
+this is calibrated Klipper's Z zero sits well above the glass and the printer
+extrudes into the air.
+
+Homing is safe at this setting. `z_offset` too low means a nozzle too high; a
+value set too large is what drives the nozzle into the bed.
 
 In the Mainsail console:
 

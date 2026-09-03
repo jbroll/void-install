@@ -2,9 +2,10 @@
 
 ## Probe Z offset is uncalibrated
 
-`z_offset` in `[bltouch]` is `0`, a placeholder. Homing Z or starting a print
-with that value drives the nozzle into the bed. Run `PROBE_CALIBRATE` before any
-Z move. See [quickstart.md](quickstart.md#2-calibrate-the-probe-offset).
+`z_offset` in `[bltouch]` is `0`, a placeholder. The true value is a couple of
+millimetres, so Klipper's Z zero currently sits above the glass and a print
+would extrude into the air. Homing is safe. Run `PROBE_CALIBRATE` before
+printing. See [quickstart.md](quickstart.md#2-calibrate-the-probe-offset).
 
 ## PID values are generic
 
