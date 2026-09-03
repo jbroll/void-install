@@ -30,6 +30,9 @@ Open <http://ender3v2.local/>.
 |-------|---------|----------|
 | Probe Z offset | `z_offset = 2.338` | `PROBE_CALIBRATE`, 2026-09-02 |
 | Probe repeatability | standard deviation 0.0046 mm over 10 samples | `PROBE_ACCURACY` |
+| Hotend PID | `24.150 / 1.331 / 109.580` | `PID_CALIBRATE` at 200 °C, fan at 50% |
+| Bed PID | `69.649 / 1.283 / 945.485` | `PID_CALIBRATE` at 60 °C |
+| Bed mesh | range 0.195 mm, −0.030 to +0.165 | 5x5 probe at 60 °C |
 
 ## Firmware currently flashed
 

@@ -1,14 +1,18 @@
 # Backlog
 
-## PID values are generic
+## First layer offset not yet confirmed on a print
 
-The `[extruder]` and `[heater_bed]` PID constants came from Klipper's sample
-config, not this machine. Marlin's stored values could not be reused; Klipper
-scales its constants differently. Run `PID_CALIBRATE` for both heaters.
+`z_offset` came from the paper test, which resolves to roughly ±0.05 mm.
+`PROBE_ACCURACY` also showed the probe triggering an average 0.027 mm below the
+calibrated zero. Neither is worth chasing on the bench. Print a single-layer
+test square, tune live with `SET_GCODE_OFFSET Z_ADJUST=±0.01 MOVE=1`, then fold
+the result into `z_offset`.
 
-## Bed mesh has never been probed
+## Bed has a front-edge tilt
 
-`BED_MESH_CALIBRATE` has not run, so there is no mesh to load.
+The 5x5 mesh spans 0.195 mm, and nearly all of it is one tilt: the front row
+reads about 0.15 mm high while the middle and back are flat within 0.07 mm. The
+mesh compensates, but `BED_SCREWS_ADJUST` would remove the cause.
 
 ## Moonraker cannot manage system services
 

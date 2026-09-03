@@ -150,6 +150,11 @@ and proxies `/websocket`, `/printer`, `/api`, `/access`, `/machine` and
 `/server` to 127.0.0.1:7125. `gzip` is off deliberately: on this CPU
 compression costs more than the LAN bandwidth it saves.
 
+The API location sets `proxy_read_timeout 3600`. Without it nginx returns 504
+after 60 seconds on `PID_CALIBRATE` and `BED_MESH_CALIBRATE`, which run for
+minutes. Klipper carries on regardless, so the 504 is misleading rather than
+fatal, but it leaves you without the result.
+
 ## 7. Printer firmware
 
 See [user-manual.md](user-manual.md#rebuilding-and-flashing-firmware).
