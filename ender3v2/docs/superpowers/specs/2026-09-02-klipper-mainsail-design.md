@@ -19,14 +19,16 @@ through Mainsail in a browser at `http://ender3v2.local/`.
 | User | `john`, uid 1000, in `dialout`, passwordless sudo, SSH key auth only |
 | Printer | Ender 3 V2, Creality 4.2.7 mainboard |
 | MCU | STM32F103 with the 28 KiB Creality bootloader |
-| Drivers | TMC2209 in standalone mode |
+| Drivers | Silent TMC drivers (TMC2208/2225 class) in standalone mode |
 | Probe | CR Touch, Marlin offsets X -40.00, Y -5.00 |
 | Link | CH340 USB serial bridge, `/dev/ttyUSB0` |
 
 The board was identified without opening the case. `lsusb` reports a CH340
 (`1a86:7523`), which rules out the later native-USB revision. `M503` returns no
 `M906` lines, so the drivers are not under UART control, and the motors run
-quiet, which means TMC2209s wired standalone. That combination is the 4.2.7.
+quiet, which means silent TMC drivers wired standalone. That combination is the
+4.2.7. Which TMC part it carries varies by batch and does not matter here,
+because standalone drivers need no Klipper configuration of their own.
 
 `M115` reports `Marlin V1.0.7 (Oct 25 2022)`, `MACHINE_TYPE:Ender-3 V2`. Steps
 per unit are stock: `M92 X80.00 Y80.00 Z400.00 E92.60`.
@@ -111,8 +113,12 @@ Derived from Klipper's `config/printer-creality-ender3-v2-2020.cfg`, with:
 ## Rollback
 
 The existing Marlin image cannot be read off the board. Creality's stock 4.2.7
-firmware for the Ender 3 V2 gets downloaded and kept on the SD card before the
-first flash, so there is a way back.
+firmware for the Ender 3 V2, the BLTouch variant, gets downloaded before the
+first flash so there is a way back.
+
+It is kept off the SD card. The bootloader flashes whatever `.bin` it finds on
+the card, so a second binary present at flash time is ambiguous. The rollback
+image goes onto the card only when rolling back, and alone.
 
 ## Risks
 
